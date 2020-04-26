@@ -5,6 +5,9 @@ import time
 import argparse
 from pathlib import Path
 from datetime import timedelta
+from tkinter import filedialog
+from tkinter import *
+
 
 class Timer:    
     def __enter__(self):
@@ -102,15 +105,23 @@ if __name__ == '__main__':
         help='Print out reduction stats for each file after execution')
     parser.add_argument('--compression-level', dest='compressionLevel', type=int, default=4,
         help='The compression level to use.')
+    parser.add_argument('--file-dialogue', dest='openFiles', action='store_true', default='False', 
+        help='Open file dialogue to pick folder rather than pass as args.')
 
 
     arguments = parser.parse_args()
 
-    if not arguments.inFolder:
-        raise Exception('You have not specified in inFolder')
+    if not arguments.openFiles:
+        if not arguments.inFolder:
+            raise Exception('You have not specified in inFolder')
 
-    if not arguments.outFolder:
-        raise Exception('You have not specified in outFolder')
+        if not arguments.outFolder:
+            raise Exception('You have not specified in outFolder')
+    else:
+        root = Tk()
+        root.withdraw()
+        arguments.inFolder = filedialog.askdirectory()
+        arguments.outFolder = filedialog.askdirectory()
 
     optimizer = PDFOptimizer(arguments)
     optimizer.run()
