@@ -77,7 +77,7 @@ class PDFOptimizer:
             with Pool(cpu_count()) as p:
                 for i, item in enumerate(p.imap_unordered(self.optimize, filesList), 1):
                     returns.append(item)
-                    stdout.write('\rdone {0:%}'.format(round(i/self.filesTotal), 2))
+                    stdout.write('\rdone {0:%}'.format(i/self.filesTotal))
         # new line
         print()
 
