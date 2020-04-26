@@ -23,9 +23,10 @@ quality = {
         4: '/screen'
     }
 
+args = None
+
 def optimize(filename: str):
 
-    
     if args.rename:
         # add "_Optimized to end of the filename"
         split = filename.split('/')[-1].split('.')
@@ -83,7 +84,7 @@ if __name__ == '__main__':
             returns = p.map(optimize, filesList)
 
     # print time it took
-    print(str(timedelta(seconds=t.interval)))
+    print('Time taken:', str(timedelta(seconds=t.interval)))
 
     # print out size improvement of each file processed
     if args.stats:
