@@ -108,7 +108,7 @@ if __name__ == '__main__':
 
 
     arguments = parser.parse_args()
-    
+
     if arguments.openFiles == True:
         from tkinter import filedialog
         from tkinter import *
@@ -125,5 +125,3 @@ if __name__ == '__main__':
 
     optimizer = PDFOptimizer(arguments)
     optimizer.run()
-
-    
