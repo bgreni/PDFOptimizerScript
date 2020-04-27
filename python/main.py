@@ -5,8 +5,6 @@ import time
 import argparse
 from pathlib import Path
 from datetime import timedelta
-from tkinter import filedialog
-from tkinter import *
 
 
 class Timer:    
@@ -110,18 +108,20 @@ if __name__ == '__main__':
 
 
     arguments = parser.parse_args()
-
-    if not arguments.openFiles:
+    
+    if arguments.openFiles == True:
+        from tkinter import filedialog
+        from tkinter import *
+        root = Tk()
+        root.withdraw()
+        arguments.inFolder = filedialog.askdirectory()
+        arguments.outFolder = filedialog.askdirectory()
+    else:
         if not arguments.inFolder:
             raise Exception('You have not specified in inFolder')
 
         if not arguments.outFolder:
             raise Exception('You have not specified in outFolder')
-    else:
-        root = Tk()
-        root.withdraw()
-        arguments.inFolder = filedialog.askdirectory()
-        arguments.outFolder = filedialog.askdirectory()
 
     optimizer = PDFOptimizer(arguments)
     optimizer.run()
