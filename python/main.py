@@ -47,14 +47,33 @@ class PDFOptimizer:
         else:
             outFile = self.args.outFolder + '/' + filename.split('/')[-1]
 
+        # Average Subsample Bicubic
+        downSampleType = 'Bicubic'
+
+        compressLevel = self.args.compressionLevel
+
+        if self.args.imageRes != -1:
+            imageRes = self.args.imageRes
+        else:
+            if compressLevel == 4:
+                imageRes = 72
+            elif compressLevel == 3:
+                imageRes = 150
+            else:
+                imageRes = 300
+
         # format ghostscript command string
         if platform == 'win32':
             command = (f'gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
             f' -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{outFile}\" \"{filename}\"')
         else:
-            command = (f'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
-            f' -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{outFile}\" \"{filename}\"')
-
+            command = (f'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
+            f' -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{outFile}\" '
+            f' -dColorImageDownsampleType=/{downSampleType} -dColorImageResolution={imageRes}'
+            f' -dGrayImageDownsampleType=/{downSampleType} -dGrayImageResolution={imageRes} -dMonoImageDownsampleType=/{downSampleType}'
+            f' -dMonoImageResolution={imageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true'
+            f' \"{filename}\"') 
+        
         # run command
         system(command)
 
@@ -88,7 +107,7 @@ class PDFOptimizer:
         # print out size improvement of each file processed
         if self.args.stats:
             for filename, beforeSize, afterSize in returns:
-                print('file: ' + filename.split('/')[-1] + ' is now ' + str(round(1 - (afterSize / beforeSize), 2)) + '%% smaller')
+                print('file: ' + filename.split('/')[-1] + ' is now ' + str(round((1 - (afterSize / beforeSize)) * 100, 2)) + '%% smaller, ' + str(beforeSize) + ' - ' + str(afterSize))
 
 if __name__ == '__main__':
 
@@ -105,11 +124,14 @@ if __name__ == '__main__':
         help='The compression level to use.')
     parser.add_argument('--file-dialogue', dest='openFiles', action='store_true', default='False', 
         help='Open file dialogue to pick folder rather than pass as args.')
+    parser.add_argument('--image-res', dest='imageRes', type=int, default=-1,
+        help='Manually set image resolution.')
 
 
     arguments = parser.parse_args()
 
     if arguments.openFiles == True:
+        # open file dialogue with tkinter
         from tkinter import filedialog
         from tkinter import *
         root = Tk()
@@ -117,6 +139,7 @@ if __name__ == '__main__':
         arguments.inFolder = filedialog.askdirectory()
         arguments.outFolder = filedialog.askdirectory()
     else:
+        # check folder args exist
         if not arguments.inFolder:
             raise Exception('You have not specified in inFolder')
 
