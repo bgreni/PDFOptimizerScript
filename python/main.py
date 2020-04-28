@@ -64,8 +64,12 @@ class PDFOptimizer:
 
         # format ghostscript command string
         if platform == 'win32':
-            command = (f'gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
-            f' -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{outFile}\" \"{filename}\"')
+            command = (f'gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
+            f' -dNOPAUSE -dQUIET -dBATCH'
+            f' -dColorImageDownsampleType=/{downSampleType} -dColorImageResolution={imageRes}'
+            f' -dGrayImageDownsampleType=/{downSampleType} -dGrayImageResolution={imageRes} -dMonoImageDownsampleType=/{downSampleType}'
+            f' -dMonoImageResolution={imageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true -dInterpolateControl=-1'
+            f' -sOutputFile=\"{outFile}\" -c \"100000000 setvmthreshold\" -f \"{filename}\"') 
         else:
             command = (f'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
             f' -dNOPAUSE -dQUIET -dBATCH'
