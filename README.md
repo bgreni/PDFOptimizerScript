@@ -19,14 +19,16 @@ python3 main.py --inFolder source/Folder/Path --outFolder dest/folder/path
 - `--file-dialogue`
     - Open a file dialogue to pick input and output folders rather than using command line arguments
     - Two windows will open in succession, the first one being to pick the input folder, and the second for the output folder, the script will continue as normal after both folders have been selected
+- `--image-res`
+    - manually set image resolution in pixel dpi
 
 Example command with all flags
 ```
-python3 main.py --inFolder source/Folder/Path --outFolder dest/folder/path --rename --stats --compression-level 3
+python3 main.py --inFolder source/Folder/Path --outFolder dest/folder/path --rename --stats --compression-level 3 --image-res 150
 ```
 Or like if you wish to pick folders with a file dialogue
 ```
-python3 main.py --file-dialogue --rename --stats --compression-level 3
+python3 main.py --file-dialogue --rename --stats --compression-level 3 --image-res 150
 ```
 
 ## Technical Details

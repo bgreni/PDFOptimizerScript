@@ -68,11 +68,11 @@ class PDFOptimizer:
             f' -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{outFile}\" \"{filename}\"')
         else:
             command = (f'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
-            f' -dNOPAUSE -dQUIET -dBATCH -sOutputFile=\"{outFile}\" '
+            f' -dNOPAUSE -dQUIET -dBATCH'
             f' -dColorImageDownsampleType=/{downSampleType} -dColorImageResolution={imageRes}'
             f' -dGrayImageDownsampleType=/{downSampleType} -dGrayImageResolution={imageRes} -dMonoImageDownsampleType=/{downSampleType}'
-            f' -dMonoImageResolution={imageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true'
-            f' \"{filename}\"') 
+            f' -dMonoImageResolution={imageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true -dInterpolateControl=-1'
+            f' -sOutputFile=\"{outFile}\" -c \"100000000 setvmthreshold\" -f \"{filename}\"') 
         
         # run command
         system(command)
