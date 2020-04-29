@@ -5,6 +5,7 @@ import time
 import argparse
 from pathlib import Path
 from datetime import timedelta
+from tqdm import tqdm
 
 
 class Timer:    
@@ -33,19 +34,18 @@ class PDFOptimizer:
     def optimize(self, filename: str):
 
         if self.args.rename:
-            # add "_Optimized to end of the filename"
-            # print('Filename: ',filename)
-            split = filename.split('/')[-1].split('.pdf')
-            # print ('split:',split)
+            # add "_Optimized to end of the filename
+            if platform == 'win32':
+                folderDivider = '\\'
+            else:
+                folderDivider = '/' 
+            split = filename.split(folderDivider)[-1].split('.pdf')
             split[0] += '_Optimized'
             newName = ''.join(split) + '.pdf'
-            # print ('selfargsoutFolder:',self.args.outFolder)
-            # print ('newName:',newName)
-            outFile = self.args.outFolder + '/' + newName
+            outFile = self.args.outFolder + folderDivider + newName
             # outFile = newName
-            # print ('outFile:',outFile)
         else:
-            outFile = self.args.outFolder + '/' + filename.split('/')[-1]
+            outFile = self.args.outFolder + folderDivider + filename.split(folderDivider)[-1]
 
         # Average Subsample Bicubic
         downSampleType = 'Bicubic'
@@ -99,19 +99,25 @@ class PDFOptimizer:
         returns = []
         with Timer() as t:
             with Pool(cpu_count()) as p:
-                for i, item in enumerate(p.imap_unordered(self.optimize, filesList), 1):
-                    returns.append(item)
-                    stdout.write('\rdone {0:%}'.format(i/self.filesTotal))
+                with tqdm(total=self.filesTotal) as pbar:
+                    for item in p.imap_unordered(self.optimize, filesList):
+                        returns.append(item)
+                        pbar.update()
+
         # new line
         print()
 
         # print time it took
         print('Time taken:', str(timedelta(seconds=t.interval)))
 
+        if platform == 'win32':
+            folderDivider = '\\'
+        else:
+            folderDivider = '/' 
         # print out size improvement of each file processed
         if self.args.stats:
             for filename, beforeSize, afterSize in returns:
-                print('file: ' + filename.split('/')[-1] + ' is now ' + str(round((1 - (afterSize / beforeSize)) * 100, 2)) + '%% smaller, ' + str(beforeSize) + ' - ' + str(afterSize))
+                print('file: ' + filename.split(folderDivider)[-1] + ' is now ' + str(round((1 - (afterSize / beforeSize)) * 100, 2)) + '%% smaller, ' + str(beforeSize) + ' - ' + str(afterSize))
 
 if __name__ == '__main__':
 
