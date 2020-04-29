@@ -1,6 +1,12 @@
 # PDFOptimizerScript
 Just a script for optimizing PDFs in a folder and outputing them into a new folder using GhostScript
 
+## Dependencies
+The script uses the wonderful [tqdm](https://github.com/tqdm/tqdm) library to display a progress bar during execution, which can be installed with the command:
+```
+pip install tqdm
+```
+
 ## Usage
 Run `main.py` with the source and destination folders like so
 **Note:** Folder paths can be relative to where the script is being run
