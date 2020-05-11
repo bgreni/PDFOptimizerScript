@@ -1,0 +1,1 @@
+python3 main.py --inFolder testdata --outFolder out --rename --stats

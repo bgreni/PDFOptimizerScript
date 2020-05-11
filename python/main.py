@@ -49,6 +49,8 @@ class PDFOptimizer:
 
         # Average Subsample Bicubic
         downSampleType = 'Bicubic'
+        monoSampleType = 'Subsample'
+        monoImageRes = 250
 
         compressLevel = self.args.compressionLevel
 
@@ -62,21 +64,18 @@ class PDFOptimizer:
             else:
                 imageRes = 300
 
+        argsString = (f'-sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
+            f' -dNOPAUSE -dQUIET -dBATCH'
+            f' -dColorImageDownsampleType=/{downSampleType} -dColorImageResolution={imageRes}'
+            f' -dGrayImageDownsampleType=/{downSampleType} -dGrayImageResolution={imageRes} -dMonoImageDownsampleType=/{monoSampleType}'
+            f' -dMonoImageResolution={monoImageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true -dInterpolateControl=-1'
+            f' -sOutputFile=\"{outFile}\" -c \"100000000 setvmthreshold\" -f \"{filename}\"')
+
         # format ghostscript command string
         if platform == 'win32':
-            command = (f'gswin64c -sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
-            f' -dNOPAUSE -dQUIET -dBATCH'
-            f' -dColorImageDownsampleType=/{downSampleType} -dColorImageResolution={imageRes}'
-            f' -dGrayImageDownsampleType=/{downSampleType} -dGrayImageResolution={imageRes} -dMonoImageDownsampleType=/{downSampleType}'
-            f' -dMonoImageResolution={imageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true -dInterpolateControl=-1'
-            f' -sOutputFile=\"{outFile}\" -c \"100000000 setvmthreshold\" -f \"{filename}\"') 
+            command = 'gswin64c ' + argsString 
         else:
-            command = (f'gs -sDEVICE=pdfwrite -dCompatibilityLevel=1.7 -dPDFSETTINGS={self.qualityOptions[self.args.compressionLevel]}'
-            f' -dNOPAUSE -dQUIET -dBATCH'
-            f' -dColorImageDownsampleType=/{downSampleType} -dColorImageResolution={imageRes}'
-            f' -dGrayImageDownsampleType=/{downSampleType} -dGrayImageResolution={imageRes} -dMonoImageDownsampleType=/{downSampleType}'
-            f' -dMonoImageResolution={imageRes} -dImageDownsampleThreshold=1.0 -dEmbedAllFonts=true -dInterpolateControl=-1'
-            f' -sOutputFile=\"{outFile}\" -c \"100000000 setvmthreshold\" -f \"{filename}\"') 
+            command = f'gs ' + argsString
         
         # run command
         system(command)
